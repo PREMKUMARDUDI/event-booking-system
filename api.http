@@ -1,0 +1,115 @@
+@baseUrl = http://localhost:5000/api
+@contentType = application/json
+
+# ==========================================
+# 1. AUTHENTICATION
+# ==========================================
+
+### 1. Register an Organizer
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "name": "John Organizer",
+    "email": "organizer@test.com",
+    "password": "password123",
+    "role": "Organizer"
+}
+
+### 2. Login as Organizer
+# @name loginOrganizer
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "organizer@test.com",
+    "password": "password123"
+}
+
+
+### 3. Register a Customer
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "name": "Alex Customer",
+    "email": "customer96@test.com",
+    "password": "password123",
+    "role": "Customer"
+}
+
+### 4. Login as Customer
+# @name loginCustomer
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "customer@test.com",
+    "password": "password123"
+}
+
+
+# ==========================================
+# 2. EVENT MANAGEMENT (Organizer Only)
+# ==========================================
+
+### 5. Create a New Event
+# @name createEvent
+POST {{baseUrl}}/events
+Content-Type: {{contentType}}
+# We grab the token directly from the "loginOrganizer" response
+x-auth-token: {{loginOrganizer.response.body.token}}
+
+{
+  "title": "Global AI Symposium 2026",
+  "description": "A deep dive into the future of artificial intelligence and machine learning.",
+  "date": "2026-01-25",
+  "availableTickets": 500
+}
+
+
+### 6. Fail Test: Customer Tries to Create Event (Should return 403)
+POST {{baseUrl}}/events
+Content-Type: {{contentType}}
+x-auth-token: {{loginCustomer.response.body.token}}
+
+{
+    "title": "Hacker Meetup",
+    "date": "2026-12-01",
+    "availableTickets": 50
+}
+
+
+### 7. Get All Events (Public)
+GET {{baseUrl}}/events
+
+
+### 8. Update Event (Trigger Background Notification)
+# We grab the ID from the "createEvent" response
+PUT {{baseUrl}}/events/6963529b022e272851b847ec
+Content-Type: {{contentType}}
+x-auth-token: {{loginOrganizer.response.body.token}}
+
+{
+    "availableTickets": 98
+}
+
+
+# ==========================================
+# 3. BOOKING SYSTEM (Customer Only)
+# ==========================================
+
+### 9. Book a Ticket (Trigger Background Email)
+POST {{baseUrl}}/bookings/69635326022e272851b847ee
+Content-Type: {{contentType}}
+x-auth-token: {{loginCustomer.response.body.token}}
+
+
+### 10. Fail Test: Organizer Tries to Book (Should return 403)
+POST {{baseUrl}}/bookings/69635326022e272851b847ee
+Content-Type: {{contentType}}
+x-auth-token: {{loginOrganizer.response.body.token}}
+
+
+### 11. Check Event Status (To see if tickets decreased)
+GET {{baseUrl}}/events
