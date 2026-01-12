@@ -27,6 +27,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
 
+// Default Route
+app.get("/", (req, res) => {
+  res.send("API is Running Successfully! 🚀");
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

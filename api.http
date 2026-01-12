@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5000/api
+@baseUrl = https://event-booking-system-backend-lc9d.onrender.com/api
 @contentType = application/json
 
 # ==========================================
@@ -44,7 +44,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-    "email": "customer@test.com",
+    "email": "customer96@test.com",
     "password": "password123"
 }
 
@@ -57,7 +57,6 @@ Content-Type: {{contentType}}
 # @name createEvent
 POST {{baseUrl}}/events
 Content-Type: {{contentType}}
-# We grab the token directly from the "loginOrganizer" response
 x-auth-token: {{loginOrganizer.response.body.token}}
 
 {
@@ -85,7 +84,6 @@ GET {{baseUrl}}/events
 
 
 ### 8. Update Event (Trigger Background Notification)
-# We grab the ID from the "createEvent" response
 PUT {{baseUrl}}/events/6963529b022e272851b847ec
 Content-Type: {{contentType}}
 x-auth-token: {{loginOrganizer.response.body.token}}

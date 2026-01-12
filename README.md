@@ -1,5 +1,7 @@
 # Event Booking System Backend
 
+[![Live Server](https://img.shields.io/badge/Live_Server-Running-success?style=for-the-badge&logo=render)](https://event-booking-system-backend-lc9d.onrender.com)
+
 This is a backend implementation for an Event Booking System built with Node.js and Express. It supports role-based access control (Organizers & Customers), event management, ticket booking, and simulated background notifications.
 
 ## 🚀 Features
