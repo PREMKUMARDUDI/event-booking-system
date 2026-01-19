@@ -25,7 +25,7 @@ export const bookTicket = async (req, res) => {
     const user = await User.findById(userId);
 
     // Background Task: Confirmation
-    sendConfirmationEmail(user.email, event.title);
+    sendConfirmationEmail(user ? user.email : "unknown user", event.title);
 
     res.json({ message: "Ticket Booked!", booking });
   } catch (error) {
