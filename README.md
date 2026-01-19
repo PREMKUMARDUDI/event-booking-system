@@ -51,7 +51,6 @@ This is a backend implementation for an Event Booking System built with Node.js 
     ```
 
 4.  **Run the Server**
-
     - **Development Mode** (Auto-restart with Nodemon):
 
       ```bash
@@ -117,6 +116,13 @@ Instead of using external message brokers like RabbitMQ or Redis (which require 
 ### 4. Database: MongoDB
 
 - **Why?** The schema flexibility of NoSQL is perfect for Event objects that might change structure. Mongoose was used for data validation to ensure data integrity (e.g., ensuring `availableTickets` is a number).
+
+### 5. Concurrency Handling: Atomic Operations
+
+To prevent **overbooking** (Race Conditions) when multiple users try to book the last ticket simultaneously, I utilized MongoDB's **atomic operators**.
+
+- **Why?** A standard "Read-Check-Write" pattern (checking `if seats > 0` then saving) is vulnerable to race conditions under high load.
+- **Solution:** I used `findOneAndUpdate()` with a query condition `{ availableTickets: { $gt: 0 } }`. This atomically checks the ticket count and decrements it in a single database operation, ensuring that tickets are never oversold.
 
 ---
 

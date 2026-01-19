@@ -4,23 +4,25 @@ import User from "../models/userModel.js";
 
 export const bookTicket = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    const { id } = req.params;
+    const userId = req.user.id;
 
-    if (event.availableTickets <= 0) {
-      return res.status(400).json({ message: "Housefull" });
-    }
+    const event = await Event.findOneAndUpdate(
+      { _id: id, availableTickets: { $gt: 0 } },
+      { $inc: { availableTickets: -1 } },
+      { new: true },
+    );
+
+    if (!event)
+      return res.status(404).json({ message: "Housefull or Event not found" });
 
     const booking = new Booking({
       event: event._id,
-      user: req.user.id,
+      user: userId,
     });
     await booking.save();
 
-    event.availableTickets -= 1;
-    await event.save();
-
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(userId);
 
     // Background Task: Confirmation
     sendConfirmationEmail(user.email, event.title);
@@ -35,7 +37,7 @@ export const bookTicket = async (req, res) => {
 const sendConfirmationEmail = (email, eventName) => {
   setTimeout(() => {
     console.log(
-      `\n[BACKGROUND] 📧 Sending Confirmation to ${email} for ${eventName}`
+      `\n[BACKGROUND] 📧 Sending Confirmation to ${email} for ${eventName}`,
     );
   }, 2000);
 };
